@@ -1,6 +1,6 @@
 ﻿Console.WriteLine("Pleae enter a number between 1 and 100:");
 
-var input = Console.ReadLne();
+var input = Console.RedLine();
 int number = Convert.ToInt32(input);
 Console.WriteLine($"You entered: {number}"); 
 

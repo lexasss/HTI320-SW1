@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="1_IDE/1_IDE.csproj" />
+  <Project Path="IDE/IDE.csproj" />
+  <Project Path="LM/LM.csproj" Id="7b5e3751-810c-4dc2-85f0-ac3ca4da6679" />
 </Solution>
