@@ -7,10 +7,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="LeapCSharp.NET4.5, Version=3.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -19,7 +15,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Visible="false" Include="..\libs\$(PlatformTarget)\LeapC.dll">
+    <None Visible="false" Include="..\libs\x64\LeapC.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
