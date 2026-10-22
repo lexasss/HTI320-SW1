@@ -59,9 +59,15 @@ void ReadDataInCycle()
             return;
 
         if (response.Length > 60)
+        {
+            Console.CursorTop = 3;
             Console.WriteLine($"{response[..60]}...");
+        }
         else
+        {
+            Console.CursorTop = 4;
             Console.WriteLine(response);
+        }
     }
 }
 
