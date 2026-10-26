@@ -2,6 +2,7 @@
   <Project Path="IDE/IDE.csproj" />
   <Project Path="Kinect20/Kinect20.csproj" Id="6909690b-9fa2-4b42-8ded-a588a44cbb49" />
   <Project Path="LeapMotion/LeapMotion.csproj" Id="7b5e3751-810c-4dc2-85f0-ac3ca4da6679" />
+  <Project Path="LeapMotionWebSocketServer/LeapMotionWebSocketServer.csproj" />
   <Project Path="SmellInspector/SmellInspector.csproj" Id="53d7fd1e-d8d5-4531-be52-d6f2940273c7" />
   <Project Path="TobiiEyeX/TobiiEyeX.csproj" Id="95d365fe-dcf8-4dc3-9d0d-79eacd77e3a0" />
   <Project Path="Ultrahaptics/Ultrahaptics.csproj" Id="b8bcff39-158d-420d-80c1-e7f33559b399" />
