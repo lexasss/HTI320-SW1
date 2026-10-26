@@ -1,4 +1,5 @@
-﻿var TAB = new string(' ', 4);
+﻿// Constants
+var TAB = new string(' ', 4);
 
 // Create Leap Motion controller
 var leap = new Leap.Controller();
@@ -13,6 +14,9 @@ Console.CursorVisible = false;
 Console.ReadKey();
 
 // The app exists here
+
+
+// Functions:
 
 void OnFrame(object? sender, Leap.FrameEventArgs args)
 {

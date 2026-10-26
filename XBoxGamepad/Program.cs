@@ -1,7 +1,9 @@
 ﻿using SharpDX.DirectInput;
 
-var TAB = new string(' ', 4);
+// Constants
+string TAB = new string(' ', 4);
 
+// Initialize variables
 double lx = 0, ly = 0;
 double rx = 0, ry = 0;
 double slider = 0;
@@ -9,14 +11,15 @@ Dictionary<string, bool> buttons = [];
 
 // Initialize DirectInput
 var directInput = new DirectInput();
-var attachedGamepads = directInput.GetDevices(DeviceType.Gamepad, DeviceEnumerationFlags.AttachedOnly);
+var attachedGamepads = directInput.GetDevices(DeviceType.Joystick, DeviceEnumerationFlags.AttachedOnly);
 if (attachedGamepads.Count == 0)
 {
     Console.WriteLine("No gamepads found.");
+    return;
 }
 
 // Create a gamepad object
-var gamepad = new Joystick(directInput, attachedGamepads[0].InstanceGuid);
+var gamepad = new Joystick(directInput, attachedGamepads.First().InstanceGuid);
 gamepad.Properties.BufferSize = 128;
 gamepad.Acquire();
 
@@ -38,6 +41,10 @@ gamepad.Unacquire();
 gamepad.Dispose();
 directInput.Dispose();
 
+// The app exists here
+
+
+// Functions:
 
 async void ReadDataInCycle(CancellationToken cts)
 {

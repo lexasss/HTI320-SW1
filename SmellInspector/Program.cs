@@ -2,6 +2,8 @@
 
 Console.WriteLine("Smell Inspector COM port communicator is running...");
 
+ListComPorts();
+
 // Prompt user for COM port ID
 Console.Write("Enter COM port ID: ");
 var portID = Console.ReadLine();
@@ -16,7 +18,6 @@ var port = new SerialPort()
     DataBits = 8,
     StopBits = StopBits.One,
 };
-
 port.Open();
 
 // Run a COM-port data reading loop in a parallel thread
@@ -26,7 +27,7 @@ _ = Task.Run(ReadDataInCycle);
 Console.WriteLine("Press 'i' to retrieve device info, or any other key to exit...");
 Console.CursorVisible = false;
 
-// Wait for a key press
+// Wait for a key press, then process it
 for (;;)
 {
     var key = Console.ReadKey();
@@ -44,6 +45,8 @@ port.Dispose();
 
 // The app exists here
 
+
+// Functions:
 
 void ReadDataInCycle()
 {
@@ -71,7 +74,6 @@ void ReadDataInCycle()
     }
 }
 
-/*
 void ListComPorts()
 {
     var portNames = SerialPort.GetPortNames();
@@ -81,4 +83,3 @@ void ListComPorts()
         Console.WriteLine($"- {name}");
     }
 }
-*/

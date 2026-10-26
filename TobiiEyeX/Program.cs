@@ -1,11 +1,12 @@
-﻿var TAB = new string(' ', 4);
+﻿// Constants
+var TAB = new string(' ', 4);
 
 // Create and start the EyeX host
 var host = new EyeXFramework.EyeXHost();
 host.Start();
 
+// Get the connected device URL
 using var etLib = new Tobii.Gaze.Core.EyeTrackerCoreLibrary();
-
 Uri url = etLib.GetConnectedEyeTracker();
 if (url == null)
 {
@@ -13,6 +14,7 @@ if (url == null)
     return;
 }
 
+// Create the gaze data stream
 var gazeStream = host.CreateGazePointDataStream(Tobii.EyeX.Framework.GazePointDataMode.LightlyFiltered);
 gazeStream.Next += OnGazePoint;
 
@@ -29,6 +31,9 @@ gazeStream.Dispose();
 host.Dispose();
 
 // The app exists here
+
+
+// Functions:
 
 void OnGazePoint(object? sender, EyeXFramework.GazePointEventArgs gazePoint)
 {

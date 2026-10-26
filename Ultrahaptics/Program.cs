@@ -7,23 +7,19 @@ if (devices.Length == 0)
     Console.WriteLine("No Ultrahaptics devices found.");
     return;
 }
-else
-{
-    foreach (var device in devices)
-    {
-        Console.WriteLine($"Device: {device.ID}");
-    }
-}
 
-// Load stimulations from the "usp" directory
-var stimulations = new UH.Stimulations("usp");
-var stimulation = stimulations.Point;
+foreach (var device in devices)
+    Console.WriteLine($"Device: {device.ID}");
 
 // Create a USP file player
 var deviceId = devices.First().ID;
-var uhPlayer = new UH.UspPlayer(deviceId);
-uhPlayer.Finished += (s, e) => Console.WriteLine("Finished playing the stimulation");
-uhPlayer.Play(stimulation, offsetZ: 0.2f);
+var uspPlayer = new UH.UspPlayer(deviceId);
+uspPlayer.Finished += (s, e) => Console.WriteLine("Finished playing the stimulation");
+
+// Load stimulations from the "usp" directory and play the POINT stimulation
+var stimulations = new UH.StimulationCollection("usp");
+var stimulation = stimulations.Point;
+uspPlayer.Play(stimulation, offsetZ: 0.2f); // set focal point 20 cm above the device surface
 
 // Instructions for users
 Console.WriteLine($"Playing {stimulation.Name.ToUpper()}");
@@ -34,7 +30,7 @@ Console.CursorVisible = false;
 Console.ReadKey();
 
 // Cleanup
-uhPlayer.Stop();
-uhPlayer.Dispose();
+uspPlayer.Stop();
+uspPlayer.Dispose();
 
 // The app exists here
