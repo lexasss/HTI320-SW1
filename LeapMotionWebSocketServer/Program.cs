@@ -4,15 +4,20 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
+// All c# code must be within some class
 partial class Program
 {
+    // Data structure (to be used to pack data to send to WebSocket clients)
     record class Joint(string Name, double X, double Y, double Z);
 
+    // Long-living variables
     static readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
     static IHostApplicationLifetime _lifetime = default!;
 
+    // Program entry point
     public async static Task Main(string[] args)
     {
+        // Create a web application with WebSocket server
         var builder = WebApplication.CreateBuilder(args);
         var app = builder.Build();
 
@@ -25,9 +30,9 @@ partial class Program
         var leap = new Leap.Controller();
         leap.FrameReady += OnFrame;
 
+        // Run the app untill Ctrl+C is pressed
         try
         {
-            // Run the app: the execution stop here until Ctrl+C is pressed
             await app.RunAsync();
         }
         finally
@@ -36,6 +41,10 @@ partial class Program
         }
     }
 
+    // Accepts client connection,
+    // receives for any possible data (though ignores it) in a loop
+    // until the client disconnects or the app shuts down,
+    // and finally closes the connection
     static async Task HandleClient(HttpContext context)
     {
         if (!context.WebSockets.IsWebSocketRequest)
@@ -57,6 +66,7 @@ partial class Program
         try
         {
             // Keep the connection open while receiving client messages.
+            // (the connection will end immediately if the receiving functionality is missing)
             var buffer = new byte[1024];
 
             while (socket.State == WebSocketState.Open)
@@ -83,12 +93,13 @@ partial class Program
 
             if (_lifetime.ApplicationStopping.IsCancellationRequested)
             {
-                // Do not wait for a WebSocket close handshake during shutdown.
+                // Terminate any connection upon shutdown
                 socket.Abort();
             }
             else if (socket.State == WebSocketState.Open ||
                      socket.State == WebSocketState.CloseReceived)
             {
+                // Close the connection gracefully of there was some error
                 try
                 {
                     await socket.CloseAsync(
@@ -106,15 +117,18 @@ partial class Program
         }
     }
 
+    // Called when new hand data is available
     static async void OnFrame(object? sender, Leap.FrameEventArgs args)
     {
         var frame = args.frame;
 
         if (frame.Hands.Count > 0)
         {
+            // Get hand data
             var hand = frame.Hands[0];
             var palmPos = hand.PalmPosition;
 
+            // Create a list of joints to be sent to clients
             List<Joint> joints = [
                 new Joint("Palm", palmPos.x, palmPos.y, palmPos.z),
             ];
@@ -125,9 +139,11 @@ partial class Program
                 joints.Add(new Joint(finger.Type.ToString(), pos.x, pos.y, pos.z));
             }
 
+            // Pack the list as JSON
             var json = JsonSerializer.Serialize(joints);
             var message = Encoding.UTF8.GetBytes(json);
 
+            // Send the joints data to clients
             foreach (var (id, socket) in _clients)
             {
                 if (socket.State != WebSocketState.Open)
