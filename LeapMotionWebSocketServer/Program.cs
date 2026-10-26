@@ -9,6 +9,7 @@ partial class Program
     record class Joint(string Name, double X, double Y, double Z);
 
     static readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
+    static IHostApplicationLifetime _lifetime = default!;
 
     public async static Task Main(string[] args)
     {
@@ -16,27 +17,26 @@ partial class Program
         var app = builder.Build();
 
         app.UseWebSockets();
+        app.Map("/leapmotion", HandleClient);
 
-        // Accept WebSocket connections.
-        app.Map("/leapmotion", AddClient);
+        _lifetime = app.Lifetime;
+
+        // Create Leap Motion controller
+        var leap = new Leap.Controller();
+        leap.FrameReady += OnFrame;
 
         try
         {
-            // Create Leap Motion controller
-            var leap = new Leap.Controller();
-            leap.FrameReady += OnFrame;
-
+            // Run the app: the execution stop here until Ctrl+C is pressed
             await app.RunAsync();
         }
         finally
         {
-            // Stop the broadcast loop when the server shuts down.
-            // In a production app, use a hosted BackgroundService instead.
+            leap.Dispose();
         }
-
     }
 
-    static async Task AddClient(HttpContext context)
+    static async Task HandleClient(HttpContext context)
     {
         if (!context.WebSockets.IsWebSocketRequest)
         {
@@ -50,6 +50,10 @@ partial class Program
         _clients[id] = socket;
         Console.WriteLine($"Client connected: {id}");
 
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(
+            context.RequestAborted,
+            _lifetime.ApplicationStopping);
+
         try
         {
             // Keep the connection open while receiving client messages.
@@ -59,7 +63,7 @@ partial class Program
             {
                 var result = await socket.ReceiveAsync(
                     new ArraySegment<byte>(buffer),
-                    context.RequestAborted);
+                    cts.Token);
 
                 if (result.MessageType == WebSocketMessageType.Close)
                     break;
@@ -77,8 +81,13 @@ partial class Program
         {
             _clients.TryRemove(id, out _);
 
-            if (socket.State == WebSocketState.Open ||
-                socket.State == WebSocketState.CloseReceived)
+            if (_lifetime.ApplicationStopping.IsCancellationRequested)
+            {
+                // Do not wait for a WebSocket close handshake during shutdown.
+                socket.Abort();
+            }
+            else if (socket.State == WebSocketState.Open ||
+                     socket.State == WebSocketState.CloseReceived)
             {
                 try
                 {
@@ -89,7 +98,7 @@ partial class Program
                 }
                 catch (WebSocketException)
                 {
-                    // The connection may already be closed.
+                    socket.Abort();
                 }
             }
 

@@ -13,6 +13,9 @@ Console.WriteLine("Press any key to exit...");
 Console.CursorVisible = false;
 Console.ReadKey();
 
+// Clean up
+leap.Dispose();
+
 // The app exists here
 
 
