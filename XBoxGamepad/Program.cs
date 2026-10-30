@@ -11,7 +11,7 @@ Dictionary<string, bool> buttons = [];
 
 // Initialize DirectInput
 var directInput = new DirectInput();
-var attachedGamepads = directInput.GetDevices(DeviceType.Joystick, DeviceEnumerationFlags.AttachedOnly);
+var attachedGamepads = directInput.GetDevices(DeviceType.Gamepad, DeviceEnumerationFlags.AttachedOnly);
 if (attachedGamepads.Count == 0)
 {
     Console.WriteLine("No gamepads found.");

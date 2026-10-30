@@ -42,7 +42,7 @@ partial class Program
     }
 
     // Accepts client connection,
-    // receives for any possible data (though ignores it) in a loop
+    // handles any incoming data (though ignores it) in a loop
     // until the client disconnects or the app shuts down,
     // and finally closes the connection
     static async Task HandleClient(HttpContext context)
